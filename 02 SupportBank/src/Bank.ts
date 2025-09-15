@@ -1,7 +1,9 @@
-export interface Account {
-  name: string;
-  balance: number;
-}
+import { format } from 'date-fns';
+import log4js from "log4js";
+
+const logger = log4js.getLogger("Bank.ts")
+
+type Accounts = Map<string, number>;
 
 export interface Transaction {
   date: Date;
@@ -12,49 +14,59 @@ export interface Transaction {
 }
 
 export default class Bank {
-  private accounts: Account[] = [];
+  private accounts: Accounts = new Map();
   private transactions: Transaction[] = [];
 
   private createAccount(name: string, balance: number = 0) {
-    this.accounts.push({
-      name,
-      balance
-    })
-  }
+    this.accounts.set(name, balance);
 
-  getAccount(name: string) {
-    return this.accounts.find(account => account.name === name);
+    logger.info(`ACCOUNT-CREATED | ${name}`)
   }
 
   getAllAccounts() {
-    return this.accounts;
+    const accountsInPounds = new Map<string, number>();
+
+    for (const [name, balanceInPence] of this.accounts) {
+      accountsInPounds.set(name, balanceInPence / 100);
+    }
+
+    return accountsInPounds;
   }
 
-  getAccountBalance(name: string) {
-    return this.getAccount(name)?.balance;
+  getAccountBalanceInPence(name: string) {
+    return this.accounts.get(name) ?? 0;
   }
 
   private setBalance(name: string, newBalance: number) {
-    const accountIndex = this.accounts.findIndex(account => account.name === name);
+    const accountExists = name in this.accounts;
 
-    if (accountIndex === -1)
+    if (!accountExists)
       this.createAccount(name, newBalance);
 
-    else if (this.accounts[accountIndex])
-      this.accounts[accountIndex].balance = newBalance;
+    else
+      this.accounts.set(name, newBalance);
   }
 
   private adjustBalance(name: string, amount: number) {
-    const balance = this.getAccountBalance(name);
+    logger.info(`ADJUST-BALANCE--START | ${name}`)
+    const balance = this.getAccountBalanceInPence(name);
+    const newBalance = balance + amount;
 
-    this.setBalance(name, (balance ?? 0) + amount);
+    this.setBalance(name, newBalance);
+
+    logger.info(`ADJUST-BALANCE--END | ${name} / ${balance} -> ${newBalance}`)
   }
 
   addTransaction(transaction: Transaction) {
-    this.adjustBalance(transaction.from, -transaction.amount);
-    this.adjustBalance(transaction.to, transaction.amount);
+    logger.info(`ADD-TRANSACTION--START | ${format(transaction.date, "dd/MM/yyyy")} / ${transaction.from} -> ${transaction.to} / £${transaction.amount} / ${transaction.narrative}`)
+
+    const amountInPence = transaction.amount * 100
+
+    this.adjustBalance(transaction.from, -amountInPence);
+    this.adjustBalance(transaction.to, amountInPence);
 
     this.transactions.push(transaction);
+    logger.info(`ADD-TRANSACTION--END`)
   }
 
   getAccountTransactions(accountName: string) {
