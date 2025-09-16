@@ -9,10 +9,9 @@ public class Arrival
     [JsonPropertyName("destinationName")] public required string DestinationName { get; set; }
     
     [JsonPropertyName("timeToStation")] public required int TimeToStationInSeconds { get; set; }
-
-    [JsonIgnore]
-    public TimeSpan GetTimeToStation
+    
+    public TimeSpan GetTimeToStation()
     {
-        get { return TimeSpan.FromSeconds(TimeToStationInSeconds); }
+        return TimeSpan.FromSeconds(TimeToStationInSeconds);
     }
 }

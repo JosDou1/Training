@@ -3,19 +3,17 @@ using RestSharp;
 
 namespace BusBoard.Services;
 
-public class ApiService(string baseUrl) : IApiService
+public class ApiService(IRestClientWrapper client) : IApiService
 {
-    private readonly RestClient _client = new(baseUrl);
-
     public async Task<T> GetAsync<T>(string endpoint)
     {
         var request = new RestRequest(endpoint);
 
         T? response;
-        
+
         try
         {
-            response = await _client.GetAsync<T>(request);
+            response = await client.GetAsync<T>(request);
         }
         catch (JsonException exception)
         {
@@ -23,7 +21,8 @@ public class ApiService(string baseUrl) : IApiService
         }
         catch (HttpRequestException exception)
         {
-            throw new HttpRequestException($"'GET {endpoint}' Exception | Request Failed with {exception.StatusCode}", exception);
+            throw new HttpRequestException($"'GET {endpoint}' Exception | Request Failed with {exception.StatusCode}",
+                exception);
         }
 
         if (response == null)

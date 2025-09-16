@@ -2,6 +2,7 @@
 using System.Text;
 using BusBoard.Models;
 using BusBoard.Services;
+using RestSharp;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -22,7 +23,7 @@ do
 
 Console.WriteLine($"\n🔃 Loading Arrivals for {stopCode}...");
 
-var tflClient = new TflClient(new ApiService("https://api.tfl.gov.uk"));
+var tflClient = new TflClient(new ApiService(new RestClientWrapper("https://api.tfl.gov.uk")));
 
 ImmutableList<Arrival> arrivals = [];
 try
@@ -39,5 +40,5 @@ Console.WriteLine();
 foreach (var arrival in arrivals)
 {
     Console.WriteLine(
-        $"[{DateTime.Now + arrival.GetTimeToStation:HH:mm}] {arrival.LineName} -> {arrival.DestinationName}");
+        $"[{DateTime.Now + arrival.GetTimeToStation():HH:mm}] {arrival.LineName} -> {arrival.DestinationName}");
 }
