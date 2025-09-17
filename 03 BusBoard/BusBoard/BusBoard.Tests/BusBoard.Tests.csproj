@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BusBoard\BusBoard.csproj" />
+      <ProjectReference Include="..\BusBoard.API\BusBoard.API.csproj" />
     </ItemGroup>
 
 </Project>

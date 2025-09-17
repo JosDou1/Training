@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using BusBoard.Models;
 using BusBoard.Models.Domain;
 using BusBoard.Services;
 
