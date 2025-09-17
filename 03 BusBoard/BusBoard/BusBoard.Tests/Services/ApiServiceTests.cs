@@ -1,4 +1,5 @@
 ﻿using BusBoard.Models;
+using BusBoard.Models.Domain;
 using BusBoard.Services;
 using Moq;
 using RestSharp;
@@ -12,9 +13,9 @@ public class ApiServiceTests
     {
         var mockRestClient = new Mock<IRestClientWrapper>();
         mockRestClient.Setup(client => client.GetAsync<Arrival>(It.IsAny<RestRequest>())).ReturnsAsync((Arrival?)null);
-        
+
         var apiService = new ApiService(mockRestClient.Object);
-        
+
         await Assert.ThrowsAsync<HttpRequestException>(() => apiService.GetAsync<Arrival?>(It.IsAny<string>()));
     }
 }

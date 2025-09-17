@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
 using BusBoard.Models;
+using BusBoard.Models.Domain;
 using BusBoard.Services;
-using RestSharp;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -10,35 +10,69 @@ Console.ForegroundColor = ConsoleColor.Yellow;
 Console.WriteLine("🚌 BusBoard 🚌");
 Console.ResetColor();
 
-string? stopCode;
+string? postcode;
 
 do
 {
-    Console.Write("\nStop Code > ");
-    stopCode = Console.ReadLine();
+    Console.Write("\nPostcode > ");
+    postcode = Console.ReadLine();
 
-    if (string.IsNullOrWhiteSpace(stopCode))
-        Console.WriteLine("❌  Invalid Stop Code");
-} while (string.IsNullOrWhiteSpace(stopCode));
+    if (string.IsNullOrWhiteSpace(postcode))
+        Console.WriteLine("❌  Invalid Postcode");
+} while (string.IsNullOrWhiteSpace(postcode));
 
-Console.WriteLine($"\n🔃 Loading Arrivals for {stopCode}...");
+Console.WriteLine($"\n🔃 Searching for Postcode Details...");
 
-var tflClient = new TflClient(new ApiService(new RestClientWrapper("https://api.tfl.gov.uk")));
+var postcodeClient = new PostcodeClient(new ApiService(new RestClientWrapper("https://api.postcodes.io")));
 
-ImmutableList<Arrival> arrivals = [];
+Postcode postcodeCoordinates;
 try
 {
-    arrivals = await tflClient.GetArrivals(stopCode);
+    postcodeCoordinates = await postcodeClient.GetPostcodeDetails(postcode);
 }
 catch (Exception exception)
 {
-    Console.WriteLine("❌  Failed to Retrieve Arrivals");
+    Console.WriteLine($"❌  Failed to Retrieve Postcode Details: {exception.Message}");
+    Environment.Exit(-1);
+    throw;
+}
+
+Console.WriteLine($"\n🔃 Searching for Nearby Bus Stops...");
+
+var tflClient = new TflClient(new ApiService(new RestClientWrapper("https://api.tfl.gov.uk")));
+
+ImmutableList<StopPoint> stopPoints = [];
+try
+{
+    stopPoints = await tflClient.GetNearbyBusStops(postcodeCoordinates.Longitude, postcodeCoordinates.Latitude, 2);
+}
+catch (Exception exception)
+{
+    Console.WriteLine($"❌  Failed to Retrieve Nearby Bus Stops: {exception.Message}");
+    Environment.Exit(-1);
+}
+
+Console.WriteLine($"\n🔃 Loading Arrivals for Nearby Bus Stops...");
+
+try
+{
+    await Task.WhenAll(stopPoints
+        .Select(async stopPoint => { stopPoint.Arrivals = await tflClient.GetArrivals(stopPoint.Id, 5); }));
+}
+catch (Exception exception)
+{
+    Console.WriteLine($"❌  Failed to Retrieve Arrivals: {exception.Message}");
     Environment.Exit(-1);
 }
 
 Console.WriteLine();
-foreach (var arrival in arrivals)
+
+foreach (var stopPoint in stopPoints)
 {
-    Console.WriteLine(
-        $"[{DateTime.Now + arrival.GetTimeToStation():HH:mm}] {arrival.LineName} -> {arrival.DestinationName}");
+    Console.WriteLine($"\n🚏 {stopPoint.Name}");
+    foreach (var arrival in stopPoint.Arrivals)
+    {
+        Console.WriteLine(
+            $"   [{DateTime.Now + arrival.GetTimeToStation():HH:mm}] {arrival.LineName} -> {arrival.DestinationName}");
+    }
 }

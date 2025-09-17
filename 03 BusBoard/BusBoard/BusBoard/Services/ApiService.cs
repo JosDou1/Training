@@ -8,7 +8,10 @@ public class ApiService(IRestClientWrapper client) : IApiService
     public async Task<T> GetAsync<T>(string endpoint)
     {
         var request = new RestRequest(endpoint);
-
+        return await GetAsync<T>(request);
+    }
+    public async Task<T> GetAsync<T>(RestRequest request)
+    {
         T? response;
 
         try
@@ -17,17 +20,17 @@ public class ApiService(IRestClientWrapper client) : IApiService
         }
         catch (JsonException exception)
         {
-            throw new JsonException($"'GET {endpoint}' Exception | Failed to Parse Response", exception);
+            throw new JsonException($"'GET {request.Resource}' Exception | Failed to Parse Response", exception);
         }
         catch (HttpRequestException exception)
         {
-            throw new HttpRequestException($"'GET {endpoint}' Exception | Request Failed with {exception.StatusCode}",
+            throw new HttpRequestException($"'GET {request.Resource}' Exception | Request Failed with {exception.StatusCode}",
                 exception);
         }
 
         if (response == null)
         {
-            throw new HttpRequestException($"'GET {endpoint}' Exception | Response was Null");
+            throw new HttpRequestException($"'GET {request.Resource}' Exception | Response was Null");
         }
 
         return response;
