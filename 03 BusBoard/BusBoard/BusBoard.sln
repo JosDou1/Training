@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusBoard.Tests", "BusBoard.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusBoard.ConsoleApp", "BusBoard.ConsoleApp\BusBoard.ConsoleApp.csproj", "{3CFC59A7-B114-4F9C-B482-3F72AC10BB2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusBoard.Web", "BusBoard.Web\BusBoard.Web.csproj", "{B8D19B52-252A-4858-B3C0-A0D35FAC3326}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{3CFC59A7-B114-4F9C-B482-3F72AC10BB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CFC59A7-B114-4F9C-B482-3F72AC10BB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CFC59A7-B114-4F9C-B482-3F72AC10BB2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8D19B52-252A-4858-B3C0-A0D35FAC3326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D19B52-252A-4858-B3C0-A0D35FAC3326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D19B52-252A-4858-B3C0-A0D35FAC3326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D19B52-252A-4858-B3C0-A0D35FAC3326}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

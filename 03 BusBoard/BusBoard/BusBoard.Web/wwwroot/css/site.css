@@ -1,0 +1,100 @@
+:root {
+    --box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0, rgba(27, 31, 35, 0.15) 0 0 0 1px;
+    --dark: #2d2f32;
+    --dark--text: #eff0f2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: 0;
+}
+
+html {
+    height: 100%;
+    min-height: 100%;
+
+
+    font-family: "Inclusive Sans", sans-serif;
+}
+
+body {
+    margin: 0;
+
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+header {
+    width: 100%;
+    padding: 1.5em;
+    background-color: var(--dark);
+    color: var(--dark--text);
+}
+
+header > span {
+    font-size: 1.5em;
+}
+
+main {
+    width: 100%;
+    max-width: 960px;
+    flex-grow: 1;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+footer {
+    width: 100%;
+    padding: 1em;
+    background-color: var(--dark);
+    color: var(--dark--text);
+    text-align: right;
+}
+
+#bus-search {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+#bus-search input {
+    border-radius: 0.3em;
+    border: 0.09375em solid hsl(207deg 84% 21% / 61%);
+    padding: 0.4em 0.6em;
+    font-family: 'Inclusive Sans', sans-serif;
+    outline-offset: 0.175em;
+    outline-width: 0.15em;
+    width: 8em;
+    font-size: 1.3em;
+    outline-color: hsl(207deg 72% 42% / 99%);
+    background-color: hsl(207.05deg 81.99% 58.63% / 12%);
+}
+
+#bus-search button {
+    background-color: hsl(207deg 81% 58% / 40%);
+    border: none;
+    border-radius: 0.3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.8em;
+    cursor:pointer;
+    transition: 0.2s ease-in-out;
+}
+
+#bus-search button:hover {
+    background-color: hsl(207deg 81% 58% / 30%);
+}
+
+#bus-search button span {
+    color: hsl(207deg 60% 38% / 77%);
+}
