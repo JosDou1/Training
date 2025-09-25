@@ -1,0 +1,81 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<div class="page-header">
+    <h1>Bus Search</h1>
+    <p>Search for nearby bus stops and their upcoming arrivals</p>
+</div>
+
+<form method="post" id="bus-search">
+    <label for="postcode" class="input-label">Postcode</label>
+    <div class="input-container">
+
+        <input id="postcode" name="Postcode" type="text" autocomplete="postal-code"
+               asp-for="Postcode"/>
+        <button type="submit">
+            <span class="material-symbols-rounded">
+                search
+            </span>
+        </button>
+    </div>
+    <span asp-validation-for="Postcode" class="text-danger"></span>
+</form>
+
+<div class="bus-stops">
+    @if (Model.BusStops is { Count: > 0 })
+    {
+        @foreach (var stop in Model.BusStops)
+        {
+            <div class="bus-stop">
+                <h3>@stop.Name</h3>
+                <div >
+                    <table>
+                        <tr>
+                            <th>Line</th>
+                            <th>Destination</th>
+                            <th>Estimated Arrival Time</th>
+                        </tr>
+
+                        @foreach (var arrival in stop.Arrivals)
+                        {
+                            <tr class="arrival">
+                                <td>@arrival.LineName</td>
+                                <td>@arrival.DestinationName</td>
+                                <td>@(DateTime.Now.Add(arrival.GetTimeToStation()).ToString("HH:mm"))</td>
+                            </tr>
+                        }
+                    </table>
+
+                    <div id="map-@stop.Id" class="stop-map" data-lat="@stop.Latitude" data-lon="@stop.Longitude">
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<script>
+    const emojiIcon = L.divIcon({
+        html: '🚏',
+        className: 'emoji-marker',
+        iconSize: [60, 60],
+        iconAnchor: [30, 30]
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.stop-map').forEach(function (el) {
+            const lat = parseFloat(el.dataset.lat);
+            const lng = parseFloat(el.dataset.lon);
+
+            const map = L.map(el.id).setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+            L.marker([lat, lng], {icon: emojiIcon})
+                .addTo(map)
+        });
+    });
+</script>
